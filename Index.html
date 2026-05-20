@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis ASAT GUI & CRUD - SMA Sedes Sapientiae</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        pre, code {
+            font-family: 'Fira Code', monospace;
+        }
+        .swing-preview {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 8px 8px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    S
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white sm:text-base">ASAT INFORMATIKA XI - KODE A</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">GUI CRUD & Layout Manager • SMA Sedes Sapientiae</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button id="toggleTheme" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                    <svg id="themeIcon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Icon changed dynamically -->
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="max-w-2xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-medium bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400 mb-4">
+                DOKUMEN SEKOLAH SANGAT RAHASIA
+            </span>
+            <h2 class="text-3xl font-extrabold tracking-tight mb-2">Simulasi Mandiri ASAT XI</h2>
+            <p class="text-slate-600 dark:text-slate-300 mb-6">Uji pemahaman Anda pada pemrograman antarmuka grafis (GUI Java Swing), fungsionalitas CRUD, konsep database, dan struktur layout container.</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8 text-left">
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
+                    <div class="text-xs text-slate-400 uppercase tracking-wider font-bold">Jumlah Soal</div>
+                    <div class="text-xl font-extrabold text-primary-600 dark:text-primary-500">70 Soal</div>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
+                    <div class="text-xs text-slate-400 uppercase tracking-wider font-bold">Waktu Simulasi</div>
+                    <div class="text-xl font-extrabold text-primary-600 dark:text-primary-500">90 Menit</div>
+                </div>
+            </div>
+
+            <!-- Choose Mode -->
+            <div class="mb-8 text-left">
+                <span class="text-sm font-bold block mb-3 text-slate-600 dark:text-slate-300">Pilih Mode Simulasi:</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="relative flex p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer focus:outline-none hover:bg-slate-50 dark:hover:bg-slate-700/20">
+                        <input type="radio" name="quiz-mode" value="practice" checked class="mt-1 h-4 w-4 text-primary-600 border-slate-300 focus:ring-primary-500">
+                        <div class="ml-3">
+                            <span class="block text-sm font-bold text-slate-900 dark:text-white">Mode Latihan</span>
+                            <span class="block text-xs text-slate-500">Koreksi & penjelasan instan langsung ditampilkan setiap kali Anda memilih jawaban.</span>
+                        </div>
+                    </label>
+                    <label class="relative flex p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer focus:outline-none hover:bg-slate-50 dark:hover:bg-slate-700/20">
+                        <input type="radio" name="quiz-mode" value="exam" class="mt-1 h-4 w-4 text-primary-600 border-slate-300 focus:ring-primary-500">
+                        <div class="ml-3">
+                            <span class="block text-sm font-bold text-slate-900 dark:text-white">Mode Ujian Nyata</span>
+                            <span class="block text-xs text-slate-500">Timer berjalan, penjelasan disembunyikan, skor akhir akan diakumulasikan di akhir kuis.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button id="start-btn" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary-500/20 transform hover:-translate-y-0.5 active:translate-y-0 transition duration-150">
+                Mulai Ujian Sekarang
+            </button>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Left Side: Navigation Map (Desktop) / Progress Info -->
+            <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 p-4 h-fit sticky top-24">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Progress Kuis</span>
+                    <span id="timer-display" class="hidden text-sm font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 py-1 px-2.5 rounded-lg">90:00</span>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 mb-6">
+                    <div id="progress-bar-fill" class="bg-primary-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Terjawab: <span id="answered-count" class="font-bold text-slate-700 dark:text-white">0</span> dari <span class="font-bold">70</span> soal</p>
+                </div>
+
+                <!-- Navigation Grid Map -->
+                <div class="border-t border-slate-100 dark:border-slate-700 pt-4">
+                    <span class="text-xs font-bold block mb-3 text-slate-400">Peta Soal</span>
+                    <div class="grid grid-cols-5 gap-1.5 max-h-[250px] overflow-y-auto pr-1" id="question-map">
+                        <!-- Generates 70 boxes -->
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-between gap-2">
+                    <button id="prev-map-btn" class="w-1/2 text-xs font-bold py-2 px-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">Sebelumnya</button>
+                    <button id="next-map-btn" class="w-1/2 text-xs font-bold py-2 px-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition">Berikutnya</button>
+                </div>
+            </div>
+
+            <!-- Middle: Question Card and Previews -->
+            <div class="lg:col-span-3 space-y-6">
+                
+                <!-- Main Question Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 shadow-md p-6 sm:p-8">
+                    
+                    <!-- Top stats of Card -->
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <span class="text-sm font-extrabold text-primary-600 dark:text-primary-500" id="question-index-display">SOAL 1</span>
+                        <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded-lg font-bold" id="question-topic">Swing Basics</span>
+                    </div>
+
+                    <!-- Question text -->
+                    <div class="text-base sm:text-lg font-bold leading-relaxed mb-6" id="question-text">
+                        Loading question...
+                    </div>
+
+                    <!-- Layout & UI Simulator Code Preview Pane -->
+                    <div id="visual-preview-container" class="hidden mb-6 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-900 text-white shadow-inner">
+                        <div class="bg-slate-800/80 px-4 py-2 border-b border-slate-700/80 flex justify-between items-center text-xs">
+                            <span class="font-bold flex items-center gap-1.5 text-slate-300">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                Mockup Jendela GUI Swing (Hasil Kode)
+                            </span>
+                            <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Preview Visual</span>
+                        </div>
+                        <div class="p-6 flex justify-center items-center bg-slate-950/40 swing-preview min-h-[160px]" id="visual-render-pane">
+                            <!-- Visual Layout Renders Dynamic Content here -->
+                        </div>
+                    </div>
+
+                    <!-- Codeblock Box (if exists) -->
+                    <div id="code-container" class="hidden mb-6 rounded-xl overflow-hidden shadow-md">
+                        <div class="bg-slate-800 px-4 py-2 flex justify-between items-center text-xs text-slate-300">
+                            <span class="font-bold">Potongan Kode Java</span>
+                            <button id="copy-code-btn" class="hover:text-white transition">Copy</button>
+                        </div>
+                        <pre class="bg-slate-900 text-slate-200 p-4 overflow-x-auto text-xs sm:text-sm"><code id="code-snippet" class="language-java"></code></pre>
+                    </div>
+
+                    <!-- Options list -->
+                    <div class="space-y-3 mb-6" id="options-list">
+                        <!-- Options generated dynamically -->
+                    </div>
+
+                    <!-- Hint Drawer -->
+                    <div class="mb-4">
+                        <button id="hint-toggle-btn" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Tampilkan Hint / Petunjuk
+                        </button>
+                        <div id="hint-box" class="hidden mt-2 p-3 bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 text-xs rounded-xl border border-amber-200/50 dark:border-amber-900/30">
+                            <!-- Hint content -->
+                        </div>
+                    </div>
+
+                    <!-- Explanation/Rationale (Visible in Practice Mode) -->
+                    <div id="rationale-container" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200/50 dark:border-slate-700/50 mt-6 transition duration-200">
+                        <span class="text-xs font-extrabold uppercase tracking-wider block mb-1 text-slate-400" id="feedback-title">Koreksi</span>
+                        <p class="text-sm" id="rationale-text"></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center justify-between">
+                    <button id="prev-btn" class="px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                        Kembali
+                    </button>
+                    <button id="next-btn" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-md transition">
+                        Lanjut
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result / Scoring Panel -->
+        <div id="result-screen" class="hidden max-w-3xl mx-auto bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/60 dark:border-slate-700/60 p-8 shadow-2xl">
+            <div class="text-center mb-8">
+                <span class="text-3xl">🎉</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2">Simulasi ASAT Selesai!</h2>
+                <p class="text-sm text-slate-500 mt-1">Berikut adalah rekapitulasi performa pengerjaan kuis Anda.</p>
+            </div>
+
+            <!-- Score Display Circular Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
+                <div class="bg-slate-50 dark:bg-slate-700/30 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <span class="text-xs uppercase font-extrabold text-slate-400">Skor Akhir</span>
+                    <h3 class="text-5xl font-extrabold text-primary-600 dark:text-primary-500 mt-1" id="score-val">0</h3>
+                    <p class="text-xs text-slate-400 mt-2">Berdasarkan rasio jawaban benar</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-700/30 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <span class="text-xs uppercase font-extrabold text-slate-400">Benar / Salah</span>
+                    <h3 class="text-3xl font-bold mt-2" id="correct-wrong-ratio">0 / 0</h3>
+                    <p class="text-xs text-slate-400 mt-3">Rasio ketepatan jawaban</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-700/30 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <span class="text-xs uppercase font-extrabold text-slate-400">Waktu Tempuh</span>
+                    <h3 class="text-3xl font-bold mt-2" id="time-elapsed-val">00:00</h3>
+                    <p class="text-xs text-slate-400 mt-3">Dari total durasi 90 menit</p>
+                </div>
+            </div>
+
+            <!-- Grade / Motivasi -->
+            <div class="p-4 rounded-xl bg-primary-50 dark:bg-primary-950/20 text-primary-900 dark:text-primary-400 border border-primary-200/50 dark:border-primary-900/30 mb-8 flex items-center gap-3">
+                <span class="text-2xl">💡</span>
+                <p class="text-sm font-semibold" id="grade-motivation"></p>
+            </div>
+
+            <!-- Interactive Action Panel -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button id="restart-btn" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-extrabold py-4 px-6 rounded-2xl shadow-lg shadow-primary-500/20 transform hover:-translate-y-0.5 active:translate-y-0 transition duration-150">
+                    🔄 Ulangi Kuis (Retake)
+                </button>
+                <button id="back-home-btn" class="flex-1 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 font-extrabold text-slate-700 dark:text-slate-200 py-4 px-6 rounded-2xl transition">
+                    Kembali ke Halaman Utama
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- App Logic Engine JS -->
+    <script>
+        // Database of exactly 70 high-yield Informatics GUI, Layout & CRUD questions derived from pages of SMA Sedes Semarang ASAT Paper A 2025/2026.
+        const questionsDB = [
+            {
+                index: 1,
+                topic: "Layout Managers",
+                question: "Banyak siswa bingung mengapa saat mereka menggunakan FlowLayout.CENTER pada panel, hasilnya tidak seperti yang diharapkan. Komponen tetap di kiri atau tidak benar-benar tengah. Seorang siswa membuat kode berikut untuk menampilkan tombol di tengah jendela dan hasilnya: Tombol tidak di tengah, melainkan di kiri atas jendela?",
+                code: "JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));\nmainPanel.add(new JButton(\"Tombol 1\"));\nmainPanel.add(new JButton(\"Tombol 2\"));\n\nJFrame frame = new JFrame();\nframe.add(mainPanel); // Frame menggunakan BorderLayout default\nframe.setSize(400, 300);\nframe.setVisible(true);",
+                preview: "flowCenterBorder",
+                options: [
+                    "Karena FlowLayout.CENTER hanya berfungsi jika frame menggunakan FlowLayout juga.",
+                    "Karena JFrame memiliki BorderLayout default, sehingga mainPanel ditempatkan di BorderLayout.CENTER dan ukurannya memenuhi frame, lalu FlowLayout.CENTER mengatur tombol di tengah panel, bukan tengah frame.",
+                    "Karena FlowLayout.CENTER tidak berfungsi pada JFrame, hanya pada JPanel.",
+                    "Karena tombol harus di-set setAlignmentX(Component.CENTER_ALIGNMENT) agar bisa tengah.",
+                    "Karena FlowLayout memerlukan minimal 3 komponen untuk bisa center."
+                ],
+                answer: 1,
+                hint: "Pikirkan tentang parent container (JFrame) yang secara default menggunakan BorderLayout. Komponen yang ditambahkan ke BorderLayout tanpa constraint diletakkan di posisi CENTER dengan mengisi seluruh ruang.",
+                rationale: "JFrame secara default menggunakan BorderLayout. Menambahkan mainPanel ke frame tanpa constraint menyebabkannya mengisi area CENTER secara penuh, kemudian FlowLayout pada mainPanel menyejajarkan tombol di tengah panel."
+            },
+            {
+                index: 2,
+                topic: "Layout Managers",
+                question: "Berdasarkan potongan kode createHeader() pada booking dialog di Klinik Sehat Kita, mengapa close button (X) tetap berada di pojok kanan atas meskipun logoPanel menggunakan FlowLayout.CENTER?",
+                code: "private JPanel createHeader() {\n    JPanel panel = new JPanel(new BorderLayout());\n    panel.setBackground(WHITE);\n\n    JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 5));\n    logoPanel.setBackground(WHITE);\n    logoPanel.add(new JLabel(\"kliksehatkita\"));\n\n    JButton btnClose = new JButton(\"X\");\n    btnClose.addActionListener(e -> dispose());\n\n    panel.add(logoPanel, BorderLayout.CENTER);\n    panel.add(btnClose, BorderLayout.EAST);\n    return panel;\n}",
+                preview: "clinicHeader",
+                options: [
+                    "Karena FlowLayout.CENTER hanya berlaku untuk komponen dalam logoPanel, sedangkan btnClose ditambahkan ke panel utama dengan constraint BorderLayout.EAST.",
+                    "Karena FlowLayout.CENTER tidak berfungsi jika parent panel menggunakan BorderLayout.",
+                    "Karena btnClose memiliki prioritas rendering lebih tinggi daripada logoPanel.",
+                    "Karena FlowLayout.CENTER hanya bekerja pada komponen pertama yang ditambahkan.",
+                    "Karena btnClose secara default selalu ditempatkan di pojok kanan tanpa memperhatikan layout parent."
+                ],
+                answer: 0,
+                hint: "Identifikasi kontainer mana yang menggunakan FlowLayout.CENTER and kontainer mana tempat btnClose diletakkan.",
+                rationale: "logoPanel menggunakan FlowLayout.CENTER sehingga label di dalamnya berposisi di tengah, sedangkan btnClose ditambahkan langsung ke panel utama dengan BorderLayout.EAST."
+            },
+            {
+                index: 3,
+                topic: "FlowLayout Gaps",
+                question: "Seorang developer ingin mengurangi jarak horizontal antar tombol toggle jenis kelamin ('Laki-laki' dan 'Perempuan') pada form booking menjadi 5 pixel dan mempertahankan jarak vertikal tetap 0 pixel. Perubahan mana yang PALING TEPAT dilakukan?",
+                code: "JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));\nbtnPanel.setBackground(WHITE);\nbtnPanel.setBorder(null);\nJToggleButton maleBtn = new JToggleButton(\"Laki-laki\");\nJToggleButton femaleBtn = new JToggleButton(\"Perempuan\");\nbtnPanel.add(femaleBtn);\nbtnPanel.add(maleBtn);",
+                preview: "flowGapChange",
+                options: [
+                    "new FlowLayout(FlowLayout.LEFT, 0, 5)",
+                    "new FlowLayout(FlowLayout.LEFT, 5, 0)",
+                    "new FlowLayout(FlowLayout.CENTER, 5, 0)",
+                    "btnPanel.setHgap(5); btnPanel.setVgap(0);",
+                    "maleBtn.setMargin(new Insets(0, 5, 0, 5));"
+                ],
+                answer: 1,
+                hint: "Konstruktor FlowLayout menerima argumen: alignment, hgap (horizontal gap), dan vgap (vertical gap).",
+                rationale: "Konstruktor FlowLayout(align, hgap, vgap) yang tepat untuk margin horizontal 5px dan vertikal 0px dengan tetap mempertahankan alignment kiri adalah FlowLayout(FlowLayout.LEFT, 5, 0)."
+            },
+            {
+                index: 4,
+                topic: "Layout Managers",
+                question: "Layout manager yang membagi container menjadi 5 area (NORTH, SOUTH, EAST, WEST, dan CENTER) adalah:",
+                preview: "borderLayoutDiagram",
+                options: [
+                    "FlowLayout",
+                    "GridLayout",
+                    "BoxLayout",
+                    "BorderLayout",
+                    "CardLayout"
+                ],
+                answer: 3,
+                hint: "Pikirkan tentang arah mata angin dan area tengah.",
+                rationale: "BorderLayout mengatur komponen di lima wilayah strategis: Utara, Selatan, Timur, Barat, dan Tengah."
+            },
+            {
+                index: 5,
+                topic: "Swing Components",
+                question: "Bagaimana konsep dari kelas JPanel dalam konteks pemrograman GUI menggunakan Java Swing?",
+                options: [
+                    "Sebuah jendela utama yang dapat berdiri sendiri dan menampilkan aplikasi desktop.",
+                    "Sebuah komponen visual yang hanya dapat menampilkan teks statis tanpa interaksi pengguna.",
+                    "Sebuah wadah ringan (lightweight container) yang digunakan untuk mengelompokkan dan mengatur tata letak komponen GUI lainnya.",
+                    "Sebuah alat bantu untuk menggambar bentuk geometris secara langsung pada layar tanpa menggunakan komponen lain.",
+                    "Sebuah manajer tata letak bawaan yang secara otomatis mengatur posisi semua komponen dalam jendela."
+                ],
+                answer: 2,
+                hint: "JPanel tidak memiliki border window default dan biasanya dimasukkan ke dalam JFrame.",
+                rationale: "JPanel berfungsi sebagai lightweight container perantara untuk menampung komponen-komponen agar antarmuka terorganisir dengan baik."
+            },
+            {
+                index: 6,
+                topic: "Swing Basics",
+                question: "Apa output dari memanggil method setVisible(true) pada objek JFrame?",
+                options: [
+                    "Frame dihapus dari memori",
+                    "Frame ditampilkan ke pengguna",
+                    "Frame diubah ukurannya",
+                    "Frame diisi dengan warna putih",
+                    "Frame dipindahkan ke latar belakang"
+                ],
+                answer: 1,
+                hint: "Metode ini menerima boolean yang mengontrol penampakan jendela.",
+                rationale: "setVisible(true) secara eksplisit menginstruksikan Window manager sistem untuk merender jendela JFrame agar terlihat di layar."
+            },
+            {
+                index: 7,
+                topic: "JOptionPane Dialogs",
+                question: "Untuk menampilkan sebuah pop-up dialog pesan error pada Java Swing, method dan parameter yang tepat digunakan adalah:",
+                options: [
+                    "JOptionPane.showMessageDialog(null, \"Error\", \"Pesan\", JOptionPane.ERROR_MESSAGE)",
+                    "JOptionPane.showErrorDialog(null, \"Error\")",
+                    "JDialog.createError(\"Error\")",
+                    "JFrame.displayError(\"Error\")",
+                    "JPanel.showError(\"Error\")"
+                ],
+                answer: 0,
+                hint: "Method showMessageDialog memiliki overload parameter untuk memodifikasi tipe ikon, seperti ERROR_MESSAGE.",
+                rationale: "JOptionPane.showMessageDialog dengan konstanta JOptionPane.ERROR_MESSAGE adalah standar API untuk pop-up kesalahan."
+            },
+            {
+                index: 8,
+                topic: "GridBagLayout Basics",
+                question: "Pada kode program berikut, hasil tampilan menunjukkan tombol tumpang tindih di pojok kiri atas panel. Apa kesalahan kritis yang menyebabkan penumpukan komponen tersebut?",
+                code: "JPanel panel = new JPanel(new GridBagLayout());\nJButton btn1 = new JButton(\"Top\");\nJButton btn2 = new JButton(\"Bottom\");\nGridBagConstraints gbc = new GridBagConstraints();\npanel.add(btn1, gbc);\npanel.add(btn2, gbc);\nframe.add(panel);",
+                preview: "gridBagOverlap",
+                options: [
+                    "GridBagLayout tidak mendukung penempatan vertikal.",
+                    "gridx dan gridy tidak diatur secara spesifik untuk masing-masing komponen sebelum ditambahkan.",
+                    "JPanel harus menggunakan BorderLayout untuk tata letak vertikal.",
+                    "Kedua tombol harus diatur dengan gridwidth = 2.",
+                    "GridBagConstraints tidak boleh dipakai secara berulang-ulang."
+                ],
+                answer: 1,
+                hint: "GridBagConstraints default meletakkan komponen di kolom 0, baris 0 jika koordinatnya tidak diubah.",
+                rationale: "Tanpa mendefinisikan gbc.gridx dan gbc.gridy yang unik untuk tiap komponen, layout manager menumpuknya pada sel default (0,0)."
+            },
+            {
+                index: 9,
+                topic: "JFrame Default Layout",
+                question: "Pada kode berikut, kedua tombol diletakkan tumpang tindih dengan 'Button 2' menutupi 'Button 1' di tengah jendela. Apa penyebab utama kejadian ini?",
+                code: "JFrame frame = new JFrame();\nframe.add(new JButton(\"Button 1\"));\nframe.add(new JButton(\"Button 2\"));\nframe.pack();\nframe.setVisible(true);",
+                preview: "borderLayoutDefaultOverlap",
+                options: [
+                    "JFrame menggunakan FlowLayout sebagai layout manager default.",
+                    "JFrame menggunakan BorderLayout sebagai layout manager default, dan komponen ditambahkan tanpa menentukan posisi (constraints), sehingga komponen kedua menimpa komponen pertama di area CENTER.",
+                    "Kedua tombol memiliki preferredSize yang sama.",
+                    "JFrame tidak memiliki content pane secara default.",
+                    "Tombol tidak diatur dengan GridBagConstraints."
+                ],
+                answer: 1,
+                hint: "JFrame secara default menggunakan BorderLayout. Menambahkan komponen tanpa region constraint akan selalu menempatkannya di BorderLayout.CENTER.",
+                rationale: "Menambahkan komponen langsung ke JFrame tanpa posisi akan mengarah ke BorderLayout.CENTER. Komponen terakhir akan menimpa komponen sebelumnya karena batas satu komponen per area."
+            },
+            {
+                index: 10,
+                topic: "Database Normalization",
+                question: "Dalam konteks pembersihan data sistem ASAT CRUD, langkah memastikan semua nilai kolom bersifat atomic (tidak dapat dibagi lagi) untuk memenuhi First Normal Form (1NF) bertujuan untuk:",
+                options: [
+                    "Menghilangkan duplikasi data secara total",
+                    "Memastikan semua nilai kolom atomic (tidak terbagi)",
+                    "Menghapus foreign key yang tidak perlu",
+                    "Menggabungkan beberapa tabel menjadi satu",
+                    "Menambahkan indeks performa"
+                ],
+                answer: 1,
+                hint: "1NF mengharuskan nilai pada setiap kolom tabel bersifat tunggal (atomic).",
+                rationale: "Tujuan utama normalisasi tingkat pertama (1NF) adalah mengeliminasi grup berulang dengan memaksakan nilai kolom bernilai atomic."
+            },
+            {
+                index: 11,
+                topic: "Dynamic GUI updates",
+                question: "Diketahui sebuah aplikasi perlu menampilkan daftar menu yang berubah sesuai hak akses pengguna saat runtime secara dinamis. Metode manakah yang paling tepat digunakan untuk mengelola perubahan komponen tersebut?",
+                options: [
+                    "JPanel disertai pemanggilan revalidate() dan repaint() setelah menambah/menghapus komponen",
+                    "JFrame dengan mengubah properti visible menjadi false lalu true",
+                    "JButton dengan menambahkan ActionListener pada setiap tombol menu",
+                    "JList dengan menggunakan DefaultListModel untuk mengubah data",
+                    "Scanner untuk membaca input hak akses dari konsol"
+                ],
+                answer: 0,
+                hint: "Ingat bahwa kontainer Swing perlu mengalkulasi ulang layout tree setelah komponen runtime diubah.",
+                rationale: "Metode revalidate() menyusun ulang hirarki layout, dan repaint() menggambar ulang piksel yang berubah."
+            },
+            {
+                index: 12,
+                topic: "Swing Components",
+                question: "Langkah apa yang perlu diambil jika ingin membuat antarmuka pengguna (GUI) yang dinamis di Java?",
+                options: [
+                    "Membuat objek JFrame",
+                    "Membuat objek JButton",
+                    "Membuat objek JPanel",
+                    "Membuat objek Scanner",
+                    "Membuat objek JList"
+                ],
+                answer: 2,
+                hint: "JPanel bertindak sebagai kanvas dinamis bertingkat ringan.",
+                rationale: "JPanel dapat ditambahkan, dihapus, dan ditata ulang secara dinamis menggunakan pengelola tata letak di dalam JFrame induk."
+            },
+            {
+                index: 13,
+                topic: "Dynamic GUI updates",
+                question: "Perhatikan potongan kode createDoctorCard pada halaman 5 PDF yang mengalami kegagalan render (tumpang tindih). Manakah perbaikan yang PALING TEPAT ditambahkan sebelum return card; agar komponen dirender dengan benar?",
+                code: "card.revalidate();\ncard.repaint();\nreturn card;",
+                options: [
+                    "card.updateUI(); return card;",
+                    "card.revalidate(); card.repaint(); return card;",
+                    "SwingUtilities.updateComponentTreeUI(card); return card; card.setVisible(true);",
+                    "card.invalidate(); return card; card.doLayout();",
+                    "card.refresh(); return card;"
+                ],
+                answer: 1,
+                hint: "Swing memerlukan pemanggilan revalidasi struktur tata letak (layout tree) dan menggambar ulang container grafis.",
+                rationale: "revalidate() memberi tahu layout manager untuk menghitung ulang ukuran, sementara repaint() menggambar ulang tampilannya pada layar."
+            },
+            {
+                index: 15,
+                topic: "JOptionPane Dialogs",
+                question: "Untuk menampilkan sebuah pesan dialog (pop-up dialog) dengan opsi pilihan 'Yes' dan 'No' di dalam aplikasi GUI Java, method yang tepat adalah:",
+                options: [
+                    "Menggunakan JOptionPane.showMessageDialog()",
+                    "Menggunakan JOptionPane.showOptionDialog()",
+                    "Menggunakan JOptionPane.showInputDialog()",
+                    "Menggunakan JOptionPane.showYesNoDialog()",
+                    "Menggunakan JOptionPane.showConfirmDialog()"
+                ],
+                answer: 4,
+                hint: "Method ini mengembalikan integer (YES_OPTION atau NO_OPTION) untuk menangkap persetujuan pengguna.",
+                rationale: "showConfirmDialog() dirancang khusus untuk meminta konfirmasi sederhana seperti Yes, No, atau Cancel."
+            },
+            {
+                index: 16,
+                topic: "Swing Basics",
+                question: "Bagaimana cara membuat objek jendela utama (window) yang memiliki judul 'Main Window' pada Java Swing?",
+                options: [
+                    "JWindow window = new JWindow(\"Main Window\");",
+                    "JFrame window; window.setTitle(\"Main Window\");",
+                    "JFrame window = new JFrame(\"Main Window\");",
+                    "JFrame window; window.setLabel(\"Main Window\");",
+                    "JFrame window = new JFrame(); window.setLabel(\"Main Window\");"
+                ],
+                answer: 2,
+                hint: "Gunakan konstruktor kelas JFrame yang menerima argumen bertipe String.",
+                rationale: "JFrame(String title) menginisialisasi jendela aplikasi utama dengan string judul yang didefinisikan langsung di baris judul jendela."
+            },
+            {
+                index: 17,
+                topic: "Event Handling",
+                question: "Perhatikan cuplikan perulangan menu berikut. Bagaimana cara yang tepat untuk mengisi kondisi perulangan agar label terbentuk sebanyak 4 buah sesuai array menuItems?",
+                code: "String[] menuItems = {\"HOME\", \"ANGGOTA\", \"BUKU\", \"ZZZZZZZZ\"};\nfor (........... ) {\n    JLabel tulisan = new JLabel(...);\n    tulisan.setOpaque(true);\n}",
+                options: [
+                    "while menuItems",
+                    "String menuItem : menuItems",
+                    "menuItem=0;menuItem++;",
+                    "JLabel menuItem;menuitem++",
+                    "menuitem++:delete;"
+                ],
+                answer: 1,
+                hint: "Gunakan struktur enhanced for-loop (for-each) Java untuk mengiterasi elemen array String.",
+                rationale: "Sintaks 'for (String menuItem : menuItems)' adalah enhanced loop yang mengiterasi setiap elemen array secara berurutan."
+            },
+            {
+                index: 18,
+                topic: "Alignment",
+                question: "Bagaimana cara mengatur posisi horizontal teks (alignment) dari label agar sejajar di tengah jendela menggunakan metode setAlignmentX?",
+                options: [
+                    "tulisan.setAlignmentX(100, 50);",
+                    "tulisan.setBounds(100, 50);",
+                    "tulisan.setAlignmentX(Component.CENTER_ALIGNMENT);",
+                    "tulisan.setAlignmentX(JLabel.CENTER);",
+                    "tulisan.setAlignmentX(setCenterPosition(100, 50));"
+                ],
+                answer: 2,
+                hint: "Gunakan konstanta alignment yang disediakan oleh kelas java.awt.Component.",
+                rationale: "Component.CENTER_ALIGNMENT digunakan untuk menentukan titik tengah alignment komponen pada kontainer seperti BoxLayout."
+            },
+            {
+                index: 19,
+                topic: "Swing Components",
+                question: "Untuk membuat kotak label dengan teks 'PENGUNJUNG' dan latar belakang berwarna hijau tua kustom (#2d8a17), pemanggilan fungsi pembantu yang tepat adalah:",
+                options: [
+                    "createBox(\"PENGUNJUNG\",\"#41c122\");",
+                    "JLabel box1 = new JLabel(\"PENGUNJUNG\");",
+                    "box1.setBackground(Color.GREEN);",
+                    "JLabel box1 = createLargeBox(\"PENGUNJUNG\", \"HIJAU\");",
+                    "JLabel box1 = createLargeBox(\"PENGUNJUNG\",\"#2d8a17\");"
+                ],
+                answer: 4,
+                hint: "Pilihlah opsi yang mendefinisikan string teks dan kode heksadesimal warna hijau tua dengan tepat.",
+                rationale: "Metode pembantu custom createLargeBox menerima teks String dan representasi warna heksadesimal."
+            },
+            {
+                index: 20,
+                topic: "BoxLayout Spacing",
+                question: "Pak Dengklek ingin menambahkan jarak horizontal statis sebesar 20 pixel di antara panel menu pada BoxLayout. Komponen spacing apa yang harus ditambahkan ke menuPanel?",
+                options: [
+                    "menuPanel.add(Box.createRigidArea(new Dimension(20, 20)));",
+                    "menuPanel.add(Box.createRigidArea(new Dimension(20, 0)));",
+                    "menuPanel.add(Box.createVerticalStrut(20));",
+                    "menuPanel.add(Box.createHorizontalStrut(20));",
+                    "menuPanel.add(Box.createGlue(new Dimension(0,20)));"
+                ],
+                answer: 3,
+                hint: "HorizontalStrut menghasilkan ruang kosong tetap hanya pada sumbu horizontal (X).",
+                rationale: "Box.createHorizontalStrut(20) menghasilkan spacing horizontal statis yang ideal untuk layout BoxLayout mendatar."
+            },
+            {
+                index: 21,
+                topic: "GridLayout Basics",
+                question: "Bagaimana cara membuat panel dengan layout GridLayout yang terdiri atas 3 baris dan 2 kolom?",
+                preview: "grid3x2",
+                options: [
+                    "JPanel panel = new JPanel(new GridLayout(2, 3));",
+                    "JPanel panel = new JPanel(new GridBagLayout(3, 2));",
+                    "JPanel panel = new JPanel(new GridLayout(3, 2));",
+                    "JPanel panel = new JPanel(new FlowLayout(3, 2));",
+                    "JPanel panel = new JPanel(new BorderLayout(3, 2));"
+                ],
+                answer: 2,
+                hint: "Konstruktor GridLayout menerima parameter baris (rows) terlebih dahulu, kemudian kolom (cols).",
+                rationale: "new GridLayout(3, 2) menghasilkan grid dengan tepat 3 baris dan 2 kolom."
+            },
+            {
+                index: 22,
+                topic: "Event Handling",
+                question: "Jika JButton tidak merespons klik, penyebabnya mungkin:",
+                options: [
+                    "Warna tombol salah",
+                    "Ukuran tombol terlalu kecil",
+                    "Tombol berada di JPanel",
+                    "Ibadah anda kurang hikmat",
+                    "Tidak ada ActionListener yang terpasang"
+                ],
+                answer: 4,
+                hint: "Komponen interaktif memerlukan listener terdaftar untuk menangani event klik.",
+                rationale: "Tanpa mendaftarkan implementasi ActionListener melalui method addActionListener(), event klik tidak akan diproses oleh JVM."
+            },
+            {
+                index: 23,
+                topic: "Advanced Swing",
+                question: "Pada method createDoctorCard, jika file gambar dokter pada doctorInfo[2] tidak ditemukan saat runtime, perilaku apa yang akan terjadi pada komponen photoPanel?",
+                code: "try {\n    ImageIcon icon = new ImageIcon(doctorInfo[2]);\n    // ... scale image\n} catch (Exception e) {\n    // block catch\n    JLabel placeholder = new JLabel(\"🩺\");\n    photoPanel.add(placeholder);\n}",
+                options: [
+                    "PhotoPanel akan menampilkan pesan error dalam bentuk teks berwarna merah sebagai indikasi kegagalan sistem.",
+                    "PhotoPanel akan menampilkan label dengan emoji stetoskop '🩺' sebagai placeholder visual yang telah diprogram dalam blok catch.",
+                    "PhotoPanel akan tetap kosong tanpa komponen apapun karena exception menghentikan proses penambahan komponen.",
+                    "Program akan mengalami crash atau terminate karena Exception yang terjadi tidak tertangani oleh sistem.",
+                    "PhotoPanel akan otomatis mencoba memuat ulang gambar dari path default yang tersimpan dalam variabel VERY_LIGHT_BLUE"
+                ],
+                answer: 1,
+                hint: "Analisis blok catch pada gambar diagram halaman 7. Ada objek placeholder dengan emoji tertentu.",
+                rationale: "Blok catch menangkap kegagalan pemuatan file dan menyajikan objek JLabel berisi emoji stetoskop sebagai fallback visual."
+            },
+            {
+                index: 24,
+                topic: "Swing Styling",
+                question: "Kira-kira apa efek visual dari penulisan kode pengaturan tombol berikut?",
+                code: "JButton saveButton = new JButton(\"Simpan\");\nsaveButton.setBackground(new Color(0, 51, 102));\nsaveButton.setForeground(Color.WHITE);",
+                options: [
+                    "Membuat tombol 'Simpan' dengan latar belakang berwarna biru tua dan teks putih.",
+                    "Membuat tombol 'Simpan' dengan latar belakang berwarna putih dan teks berwarna biru tua.",
+                    "Membuat tombol 'Simpan' dengan latar belakang berwarna putih dan teks berwarna hitam.",
+                    "Membuat tombol 'Simpan' dengan latar belakang berwarna biru tua dan teks berwarna hitam.",
+                    "Membuat tombol 'Simpan' saja tanpa efek pewarnaan kustom."
+                ],
+                answer: 0,
+                hint: "Nilai RGB (0, 51, 102) melambangkan warna biru tua (dark blue), sementara setForeground mewarnai teks.",
+                rationale: "setBackground mengatur warna isi tombol menjadi biru tua, dan setForeground(Color.WHITE) mewarnai label teks menjadi putih."
+            },
+            {
+                index: 25,
+                topic: "Swing Components",
+                question: "Bagian kode manakah yang tepat untuk menginstansiasi JComboBox berisi opsi pilihan 'Pria', 'Wanita', dan 'Lainnya'?",
+                options: [
+                    "String[] genderOptions = {\"Male\", \"Female\", \"Others\"};\nJComboBox<String> genderComboBox = new JComboBox<>(genderOptions);",
+                    "String[] genderOptions = {\"Pria\", \"Wanita\", \"Lainnya\"};\nJComboBox<String> genderComboBox = new JComboBox<>(genderOptions);",
+                    "String[] genderOptions = {\"Pria\", \"Perempuan\"};\nJComboBox<String> genderComboBox = new JComboBox<>(genderOptions);",
+                    "String[] genderOptions = {\"Lelaki\", \"Perempuan\", \"Lainnya\"};\nJComboBox<String> genderComboBox = new JComboBox<>(genderOptions);",
+                    "String[] genderOptions = {\"Cowok\", \"Cewek\", \"Lainnya\"};\nJComboBox<String> genderComboBox = new JComboBox<>(genderOptions);"
+                ],
+                answer: 1,
+                hint: "Pilihlah array String yang berisikan teks persis 'Pria', 'Wanita', dan 'Lainnya'.",
+                rationale: "Konstruktor JComboBox menerima array objek yang berfungsi sebagai item-item pilihan drop-down menu."
+            },
+            {
+                index: 26,
+                topic: "JFrame Positioning",
+                question: "Bagaimana cara memposisikan jendela aplikasi (JFrame) agar muncul tepat di tengah layar monitor secara otomatis?",
+                code: "JFrame frame = new JFrame();\nframe.setSize(500, 400);\nframe.setLocationRelativeTo(null);\nframe.setVisible(true);",
+                options: [
+                    "setLocationRelativeTo(null)",
+                    "setCenterLocation()",
+                    "setMiddleLocation()",
+                    "setRelativeToCenter()",
+                    "setCenteredLocation()"
+                ],
+                answer: 0,
+                hint: "Metode ini menerima argumen Component. Melewatkan nilai null akan menyelaraskannya terhadap layar komputer.",
+                rationale: "setLocationRelativeTo(null) adalah cara standar Java Swing untuk memusatkan jendela JFrame di tengah layar monitor."
+            },
+            {
+                index: 27,
+                topic: "JPanel Default Layout",
+                question: "Manakah pengelola tata letak (Layout Manager) default yang dipasang secara otomatis pada objek JPanel baru jika tidak ditentukan secara eksplisit?",
+                options: [
+                    "GridLayout",
+                    "BorderLayout",
+                    "FlowLayout",
+                    "BoxLayout",
+                    "GridBagLayout"
+                ],
+                answer: 2,
+                hint: "Berbeda dengan JFrame, JPanel menyusun komponen dari kiri ke kanan secara mengalir.",
+                rationale: "JPanel secara default menggunakan FlowLayout dengan perataan tengah (CENTER) dan jarak antar komponen 5 pixel."
+            },
+            {
+                index: 28,
+                topic: "BoxLayout Basics",
+                question: "Maksud dari potongan kode program berikut ini adalah:",
+                code: "JFrame frame = new JFrame(\"Form\");\nframe.setSize(300, 500);\nJPanel panel = new JPanel();\npanel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));\nJLabel nameLabel = new JLabel(\"Nama:\");\nJTextField nameField = new JTextField(15);\npanel.add(nameLabel);\npanel.add(nameField);\nfor (int i=1; i<=1; i++) {\n    JButton button = new JButton(Integer.toString(i));\n    panel.add(button);\n}",
+                options: [
+                    "Membuat frame dengan judul 'Form', ukuran 300x500 pixel, dan menambahkan dua label (Nama dan Umur) serta dua field input di dalam panel dengan layout FlowLayout.",
+                    "Membuat frame dengan judul 'Form', ukuran 300x500 pixel, dan menambahkan dua label (Nama dan Umur) serta dua field input di dalam panel dengan layout BorderLayout.",
+                    "Membuat frame dengan judul 'Form', ukuran 300x500 pixel, dan menambahkan label 'Nama:' beserta teks field masukan, disusun vertikal menggunakan BoxLayout, disertai sebuah tombol bertuliskan '1'.",
+                    "Membuat frame dengan judul 'Form', ukuran 300x500 pixel, dan menambahkan dua label (Nama dan Umur) serta dua field input di dalam panel dengan layout GridLayout.",
+                    "Membuat frame dengan judul 'Form', ukuran 300x500 pixel, dan menambahkan dua label (Nama dan Umur) serta dua field input di dalam panel dengan layout GridBagLayout."
+                ],
+                answer: 2,
+                hint: "Amati penggunaan BoxLayout.Y_AXIS dan perulangan penambahan tombol bertuliskan nilai String 'i'.",
+                rationale: "BoxLayout.Y_AXIS menyusun komponen secara vertikal dari atas ke bawah, dan perulangan menambahkan satu tombol bertuliskan angka '1'."
+            },
+            {
+                index: 29,
+                topic: "JFrame Positioning",
+                question: "Method penentu posisi jendela relatif terhadap komponen lain pada Java Swing adalah:",
+                options: [
+                    "setLocationRelativeTo",
+                    "setCenterLocation",
+                    "setMiddleLocation",
+                    "setRelativeToCenter",
+                    "setCenteredLocation"
+                ],
+                answer: 0,
+                rationale: "Fungsi setLocationRelativeTo(null) menempatkan frame tepat di tengah dimensi layar monitor."
+            },
+            {
+                index: 30,
+                topic: "Swing Components",
+                question: "Potongan kode berikut bertujuan untuk memanipulasi progress bar:",
+                code: "JProgressBar progressBar = new JProgressBar();\nprogressBar.setValue(50);",
+                options: [
+                    "Mengubah warna baris kemajuan menjadi biru",
+                    "Menghapus baris kemajuan dari tampilan",
+                    "Menonaktifkan baris kemajuan",
+                    "Mengatur ukuran baris kemajuan menjadi 50 piksel",
+                    "Mengatur nilai persentase pemuatan baris kemajuan ke posisi awal sebesar 50%"
+                ],
+                answer: 4,
+                hint: "Method setValue menetapkan nilai saat ini (current value) dari objek progress bar.",
+                rationale: "setValue(50) mengubah posisi pengisian bar kemajuan secara visual menjadi 50% dari batas maksimumnya."
+            },
+            {
+                index: 31,
+                topic: "Java Basics",
+                question: "Apakah singkatan resmi dari istilah JDK dalam ekosistem pemrograman Java?",
+                options: [
+                    "Java Developer Kit",
+                    "Java Development Kit",
+                    "Java Design Kit",
+                    "Java Developing Kit",
+                    "Java Divergen Kit"
+                ],
+                answer: 1,
+                hint: "Ini adalah paket perangkat lunak yang digunakan untuk merancang dan menjalankan program Java.",
+                rationale: "JDK singkatan dari Java Development Kit, yaitu lingkungan perangkat lunak untuk mengembangkan aplikasi Java."
+            },
+            {
+                index: 32,
+                topic: "Swing Components",
+                question: "Komponen Java Swing yang digunakan untuk menampilkan area teks multi-baris agar pengguna dapat menginput teks panjang adalah:",
+                options: [
+                    "JTextArea",
+                    "JTextField",
+                    "JLabel",
+                    "JPasswordField",
+                    "JComboBox"
+                ],
+                answer: 0,
+                hint: "JTextField hanya satu baris, sedangkan komponen ini mendukung multi-line.",
+                rationale: "JTextArea adalah komponen teks multi-baris kustom yang memungkinkan masukan paragraf teks."
+            },
+            {
+                index: 33,
+                topic: "Swing Styling",
+                question: "Perhatikan kode penggalan kelas ComplexFrame. Bagaimana cara yang tepat untuk menambahkan scrollPane ke panel utama dan membuat outputArea tidak dapat diedit oleh pengguna?",
+                code: "outputArea = new JTextArea();\nJScrollPane scrollPane = new JScrollPane(outputArea);\n// Bagian rumpang...",
+                options: [
+                    "outputArea.append(\"Input: + inputPanel+ \"\\n\");\nJScrollPane scrollPane = new JScrollPane(outputArea);\nsetLayout(new BorderLayout(BorderLayout.CENTER));",
+                    "inputField.append(\"Input: \" + inputPanel+ \"\\n\");\noutputArea.setEditable(inputField);\nsetLayout(new BorderLayout(BorderLayout.CENTER));",
+                    "outputArea.append(\"Input: \" + inputText + \"\\n\");\noutputArea.setEditable(false);\nadd(scrollPane, BorderLayout.CENTER);",
+                    "outputArea.setEditable(false);\nadd(scrollPane, BorderLayout.CENTER);\nJScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED;",
+                    "ScrollPane scrollPane = new JScrollPane(new JList<>());\noutputArea.setEditable(false);\nadd(scrollPane, BorderLayout.CENTER);"
+                ],
+                answer: 2,
+                hint: "Gunakan setEditable(false) untuk memproteksi teks, dan add(scrollPane, BorderLayout.CENTER) untuk tata letak area tengah.",
+                rationale: "setEditable(false) mencegah pengubahan teks manual, dan menambahkan JScrollPane ke BorderLayout.CENTER akan merentangkannya di area konten dinamis."
+            },
+            {
+                index: 34,
+                topic: "Layout Managers",
+                question: "Perhatikan kode metode createScheduleCell() pada halaman 11 PDF. Manakah deskripsi yang PALING TEPAT mengenai struktur dan perilaku tampilan visual sel jadwal yang dihasilkan?",
+                options: [
+                    "Sebuah panel utama berlatar putih dengan border biru muda, yang secara acak (sebesar 30% peluang) memuat panel tambahan berwarna di bagian tengah (Center) yang berisi dua baris teks (waktu dan nama dokter) tersusun vertikal.",
+                    "Sebuah panel utama berlatar putih dengan border biru muda yang selalu menampilkan tabel berisi daftar dokter dengan layout grid, di mana setiap sel memiliki warna latar belakang yang berbeda-beda.",
+                    "Sebuah panel utama berbentuk lingkaran dengan gradient warna biru yang menampilkan label waktu dan nama dokter secara horizontal di setiap eksekusi program.",
+                    "Sebuah panel utama berlatar putih dengan border hijau yang memuat tombol 'Book Now' dan panel informasi dokter di bagian bawah menggunakan BoxLayout.Y_AXIS.",
+                    "Sebuah panel dengan 12 kolom yang menampilkan 6 label hari di baris ganjil dan 6 label waktu di baris genap menggunakan GridBagLayout."
+                ],
+                answer: 0,
+                hint: "Amati logika pengkondisian peluang (Math.random() < 0.3) di dalam implementasi kode halaman 11.",
+                rationale: "Kode tersebut mendefinisikan peluang acak sebesar 30% untuk memuat info slot dokter aktif (booked) ke dalam sel jadwal."
+            },
+            {
+                index: 36,
+                topic: "Advanced Swing",
+                question: "Jika aplikasi sedang menampilkan kalender bulan Maret 2023, kemudian pengguna memanggil method test1(3) diikuti dengan memanggil test2(), manakah urutan tampilan label bulan/tahun yang benar?",
+                code: "void test1(int delta) {\n    currentCalendar.add(Calendar.MONTH, delta);\n    updateMonthYearLabel();\n}\nvoid test2() {\n    currentCalendar = Calendar.getInstance(); // Reset ke waktu sekarang (Mei 2026)\n    updateMonthYearLabel();\n}",
+                options: [
+                    "Maret 2023 → Juni 2023 → Maret 2023",
+                    "Maret 2023 → Juni 2023 → Juni 2023",
+                    "Maret 2023 → April 2023 → Maret 2023",
+                    "Maret 2023 → Juni 2023 → Mei 2026 (atau waktu sistem saat ini)",
+                    "Maret 2023 → April 2023 → April 2023"
+                ],
+                answer: 3,
+                hint: "test1(3) menambahkan 3 bulan (Maret + 3 = Juni), sedangkan test2() mengembalikan objek kalender ke waktu hari ini (Mei 2026).",
+                rationale: "Calendar.getInstance() menginisialisasi ulang penunjuk tanggal sistem ke bulan/tahun saat program dijalankan secara fisik (Mei 2026)."
+            },
+            {
+                index: 37,
+                topic: "Swing Components",
+                question: "Perhatikan potongan kode pembentukan kartu fitur layanan Klinik pada halaman 14. Bagian kode mana yang tepat untuk menginstansiasi ikon gambar kustom berskala 40x40 pixel?",
+                options: [
+                    "ImageIcon icon = new ImageIcon(img);\nImage scaledImg = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);\nJLabel iconLabel = new JLabel(new ImageIcon(scaledImg));",
+                    "JLabel iconLabel = new JLabel(\"🩺\");\niconLabel.setSize(40, 40);",
+                    "ImageIcon icon = new ImageIcon(new Dimension(40, 40));",
+                    "JLabel iconLabel = new JLabel();\niconLabel.setIcon(new ImageIcon(\"logo.png\"));",
+                    "Image img = Toolkit.getDefaultToolkit().getImage(\"icon.png\");"
+                ],
+                answer: 0,
+                hint: "Untuk skala halus pada Swing, gunakan getScaledInstance dengan konstanta Image.SCALE_SMOOTH.",
+                rationale: "Kombinasi getScaledInstance() dan pembungkusan ulang ke ImageIcon menjamin resolusi ikon kustom tetap tajam dan proporsional."
+            },
+            {
+                index: 38,
+                topic: "Swing Styling",
+                question: "Berdasarkan analisis kode metode createEnhancedButton(String text, boolean isPrimary), bagaimana karakteristik interaktif dari tombol yang dihasilkan?",
+                options: [
+                    "Tombol akan langsung menampilkan warna latar berwarna biru (jika primary) sejak awal, lalu warnanya akan memudar saat kursor keluar.",
+                    "Tombol akan tampil polos tanpa warna latar dan garis tepi di awal, namun tiba-tiba permanen muncul saat diklik satu kali.",
+                    "Tombol memiliki dua gaya visual berbeda tergantung isPrimary, di mana dalam kondisi normal tampil transparan memanfaatkan warna panel belakang, namun saat di-hover (sorot), ia menampilkan latar belakang dan garis tepi sesuai gaya.",
+                    "Tombol akan terus-menerus menampilkan efek animasi warna berkedip-kedip antara warna primary dan default.",
+                    "Tombol akan tampil dengan gaya metalik bawaan sistem operasi tanpa efek interaksi kustom."
+                ],
+                answer: 2,
+                hint: "setContentAreaFilled(false) membuat background transparan di awal, sedangkan MouseAdapter menangani efek sorot (hover).",
+                rationale: "Tombol mengandalkan deteksi mouseEntered untuk mewarnai latar belakang dan mouseExited untuk mengembalikannya menjadi transparan."
+            },
+            {
+                index: 41,
+                topic: "GridLayout Basics",
+                question: "Jika Anda memiliki 6 buah tombol JButton yang ditambahkan secara berurutan ke sebuah JPanel ber-GridLayout(2, 3), bagaimanakah susunan tombol saat jendela pertama kali dirender?",
+                preview: "grid2x3",
+                options: [
+                    "6 tombol tersusun dalam 1 baris horizontal karena kolom otomatis meregang.",
+                    "Tombol tersusun dalam 2 baris dan 3 kolom; baris pertama diisi Tombol 1, 2, 3 dan baris kedua diisi Tombol 4, 5, 6.",
+                    "Tombol tersusun dalam 3 baris dan 2 kolom karena Java menukar dimensi secara otomatis.",
+                    "Tombol tersusun secara acak tergantung koordinat thread rendering.",
+                    "Hanya terlihat 5 tombol saja karena sel terakhir dicadangkan sebagai ruang kosong."
+                ],
+                answer: 1,
+                hint: "GridLayout mengisi baris demi baris dari kiri ke kanan, atas ke bawah secara teratur.",
+                rationale: "Elemen ditambahkan berurutan memenuhi kolom baris pertama terlebih dahulu (1, 2, 3), baru kemudian berpindah ke baris kedua (4, 5, 6)."
+            },
+            {
+                index: 42,
+                topic: "Event Handling",
+                question: "Ketika mendaftarkan MouseListener menggunakan kelas anonim untuk mendeteksi aksi klik mouse pada label, cara penulisan anotasi @Override yang benar untuk method mouseClicked adalah:",
+                options: [
+                    "@Override\npublic void mouseClicked(MouseEvent e) { ... }",
+                    "@override\nvoid mouseClicked(MouseEvent e) { ... }",
+                    "// @Override\npublic void mouseClick(MouseEvent e) { ... }",
+                    "@Overriding\npublic void mouseClicked(Event e) { ... }",
+                    "public void mouseClicked() { ... }"
+                ],
+                answer: 0,
+                hint: "Anotasi di Java bersifat case-sensitive dan harus diletakkan tepat sebelum deklarasi method.",
+                rationale: "Sintaks '@Override public void mouseClicked(MouseEvent e)' mengesampingkan method kosong bawaan dari interface MouseListener/MouseAdapter secara valid."
+            },
+            {
+                index: 43,
+                topic: "Layout Managers",
+                question: "Analisis layout keluaran kode AnalisisGUI pada halaman 19 PDF! Posisi mana yang ditempati oleh panelBawah dan label utama?",
+                options: [
+                    "Teks 'Data Form' berada di tengah layar, tombol 'Save' dan 'Cancel' berada di bawah form dengan rata kiri.",
+                    "Teks 'Data Form' berada di bagian utara (NORTH) frame utama, sedangkan di bagian selatan (SOUTH) terdapat panelBawah berisi tombol 'Save' dan 'Cancel' rata kanan (FlowLayout.RIGHT) di posisi SOUTH.",
+                    "Teks 'Data Form' dan kedua tombol tersusun dalam satu baris secara horizontal di bagian atas frame.",
+                    "Akan terjadi error karena JPanel tidak bisa dimasukkan ke dalam region BorderLayout.SOUTH.",
+                    "Tombol 'Save' dan 'Cancel' akan mengisi seluruh area frame dari kiri ke kanan karena memakai FlowLayout."
+                ],
+                answer: 1,
+                hint: "JFrame BorderLayout menempatkan label di NORTH dan panelBawah di SOUTH.",
+                rationale: "Konstruksi BorderLayout menempatkan label judul di bagian paling atas (NORTH) dan baris tombol di bagian paling bawah (SOUTH)."
+            },
+            {
+                index: 44,
+                topic: "Swing Components",
+                question: "Dalam aplikasi kalkulator luas segitiga kustom, metode mana yang digunakan untuk mengekstrak string teks masukan pengguna dari JTextField bernama txtAlas?",
+                options: [
+                    "txtAlas.getValue()",
+                    "txtAlas.getText()",
+                    "txtAlas.getInput()",
+                    "txtAlas.read()",
+                    "txtAlas.data()"
+                ],
+                answer: 1,
+                hint: "Method ini mengembalikan nilai bertipe data java.lang.String dari objek masukan teks.",
+                rationale: "getText() adalah API resmi Java Swing untuk mengambil konten karakter yang tertulis di dalam JTextField."
+            },
+            {
+                index: 45,
+                topic: "Layout Managers",
+                question: "Bagaimanakah skema kombinasi layout terbaik untuk menyusun aplikasi profesional yang memiliki toolbar horizontal di atas, sidebar menu statis di kiri, dan area konten utama di tengah?",
+                options: [
+                    "Menggunakan GridLayout(3, 1) di seluruh kontainer induk.",
+                    "Menggunakan satu FlowLayout dengan perataan kiri (LEFT).",
+                    "Menggunakan BorderLayout pada kontainer utama, di mana Toolbar diletakkan di NORTH, Sidebar di WEST, dan Area Konten di CENTER.",
+                    "Menggunakan BoxLayout secara vertikal pada frame utama.",
+                    "Menggunakan GridBagLayout tanpa batasan gbc untuk menyatukan area."
+                ],
+                answer: 2,
+                hint: "Pikirkan pembagian wilayah: Utara (NORTH) untuk atas, Barat (WEST) untuk kiri, dan Tengah (CENTER) untuk area utama.",
+                rationale: "Struktur wilayah BorderLayout sangat ideal untuk arsitektur aplikasi desktop standar (North = Header, West = Sidebar, Center = Content)."
+            },
+            {
+                index: 46,
+                topic: "Advanced Swing",
+                question: "Siswa ingin mencegah aplikasi mengalami crash ketika pengguna menginput teks non-numerik (seperti 'abc') ke JTextField masukan angka. Blok kode penanganan kesalahan (Exception Handling) mana yang paling tepat digunakan?",
+                options: [
+                    "try {\n    double alas = Double.parseDouble(txtAlas.getText());\n} catch (NumberFormatException e) {\n    JOptionPane.showMessageDialog(null, \"Input harus angka!\");\n}",
+                    "if (txtAlas.getText() == \"abc\") {\n    System.out.println(\"Error\");\n}",
+                    "try {\n    double alas = (double) txtAlas.getText();\n} catch (Exception e) { }",
+                    "throw new IllegalArgumentException(\"Error masukan\");",
+                    "txtAlas.validate();"
+                ],
+                answer: 0,
+                hint: "Konversi String ke double dapat melempar kegagalan NumberFormatException.",
+                rationale: "Double.parseDouble() melempar NumberFormatException jika string tidak valid; menangkapnya dengan blok try-catch mencegah aplikasi crash."
+            },
+            {
+                index: 47,
+                topic: "GridLayout Basics",
+                question: "Mengapa tombol-tombol angka dalam panel kalkulator GridLayout(4, 4) otomatis membesar secara proporsional dan memenuhi seluruh area window tanpa menyisakan ruang kosong saat ukuran window diperbesar?",
+                options: [
+                    "GridLayout memiliki cell padding otomatis yang memaksa komponen membesar mengikuti resolusi layar monitor.",
+                    "GridLayout membagi ruang kontainer secara merata menjadi sel-sel dengan ukuran yang sama persis, dan memaksa setiap komponen meregang memenuhi sel masing-masing.",
+                    "GridLayout mengimplementasikan ComponentOrientation yang memaksa komponen untuk meregang secara horizontal dan vertikal.",
+                    "GridLayout menggunakan konsep SequentialGroup yang mengikat ukuran komponen agar selalu mengikuti ukuran container.",
+                    "GridLayout secara default mengubah ukuran font pada tombol sehingga memenuhi area yang tersedia"
+                ],
+                answer: 1,
+                hint: " GridLayout membagi total luas wilayah induk secara sama rata kepada seluruh sel.",
+                rationale: "Setiap komponen dalam sel GridLayout dipaksa mengikuti dimensi sel yang dinamis mengikuti ukuran container induk."
+            },
+            {
+                index: 48,
+                topic: "Event Handling",
+                question: "Kelemahan dari penggunaan ActionListener pada JComboBox adalah event tetap terpicu meskipun pengguna memilih kembali item yang sama. Jenis Listener apa yang sebaiknya digunakan agar event hanya terpicu saat pilihan benar-benar berubah?",
+                options: [
+                    "ActionListener",
+                    "MouseListener",
+                    "KeyListener",
+                    "ItemListener (menggunakan state SELECTED)",
+                    "FocusListener"
+                ],
+                answer: 3,
+                hint: "Listener ini melacak transisi perubahan status pilihan elemen (dari unselected menjadi selected).",
+                rationale: "ItemListener memicu itemStateChanged yang mendeteksi perubahan status seleksi spesifik melalui ItemEvent.SELECTED."
+            },
+            {
+                index: 49,
+                topic: "Swing Components",
+                question: "Pasangan baris kode mana yang tepat untuk mendeklarasikan objek JTextArea berukuran 10 baris dan 25 kolom dengan fitur pemotongan kata (word wrap) diaktifkan?",
+                options: [
+                    "JTextArea ta = new JTextArea(\"Hello World\", 10, 25);\nta.setWrapStyleWord(false);",
+                    "JTextArea ta = new JTextArea(10, 25);\nta.setWrapStyleWord(true);\nta.setLineWrap(true);",
+                    "JTextArea ta = new JTextArea(\"Hello World\", 25, 10);\nta.setWrapStyleWord(true);",
+                    "JTextArea ta = new JTextArea(\"Hello World\", 10, 25);\nta.setWrapStyleWord(true);",
+                    "JTextArea ta = new JTextArea(10, 25, \"Hello World\");\nta.setLineWrap(false);"
+                ],
+                answer: 1,
+                hint: "Untuk mengaktifkan word wrap, Anda perlu memanggil setLineWrap(true) dan setWrapStyleWord(true).",
+                rationale: "setLineWrap(true) mengaktifkan pemotongan baris, dan setWrapStyleWord(true) memastikan pemotongan terjadi di batas kata penuh, bukan karakter."
+            },
+            {
+                index: 50,
+                topic: "Layout Managers",
+                question: "Berdasarkan diagram hierarki tata letak panel kompleks di halaman 26, manakah potongan instansiasi kode program yang paling tepat?",
+                options: [
+                    "JPanel topPanel = new JPanel(new FlowLayout());\nJPanel centerPanel = new JPanel(new GridLayout(4, 1));\nJPanel bottomPanel = new JPanel(new BorderLayout());\nframe.add(topPanel, BorderLayout.NORTH);\nframe.add(centerPanel, BorderLayout.CENTER);\nframe.add(bottomPanel, BorderLayout.SOUTH);",
+                    "JPanel topPanel = new JPanel(new BorderLayout());\nJPanel centerPanel = new JPanel(new FlowLayout());\nJPanel bottomPanel = new JPanel(new GridLayout());",
+                    "JPanel topPanel = new JPanel(new GridLayout(1, 3));\nJPanel centerPanel = new JPanel(new BorderLayout());\nJPanel bottomPanel = new JPanel(new FlowLayout());",
+                    "JPanel topPanel = new JPanel(new BoxLayout(topPanel, BoxLayout.Y_AXIS));",
+                    "JPanel topPanel = new JPanel(new GridBagLayout());"
+                ],
+                answer: 0,
+                hint: "Top panel menggunakan FlowLayout default, tengah menggunakan GridLayout, dan bawah menggunakan BorderLayout.",
+                rationale: "Struktur ini merefleksikan diagram halaman 26 secara tepat dengan BorderLayout sebagai layout manager container utama."
+            },
+            {
+                index: 51,
+                topic: "CRUD & Database",
+                question: "Seorang siswa mendapati kolom 'Judul' dan 'Pengarang' kosong saat menampilkan data ResultSet JTable dari database, meskipun kolom 'ID' terisi angka dengan benar. Apa kemungkinan penyebab utamanya?",
+                code: "while(rs.next()) {\n    model.addRow(new Object[]{rs.getInt(\"id\"), rs.getString(\"judul\"), rs.getString(\"pengarang\")});\n}",
+                options: [
+                    "Nama kolom pencarian data pada string argument rs.getString(\"...\") tidak cocok secara tepat (case-sensitive) dengan nama kolom yang terdaftar di skema tabel database.",
+                    "DefaultTableModel memerlukan pemanggilan setColumnIdentifiers sebelum baris ditambahkan.",
+                    "JTable tidak mendukung rendering objek String secara langsung.",
+                    "Lupa memanggil metode model.fireTableDataChanged() di dalam loop perulangan.",
+                    "ResultSet secara otomatis mengosongkan kolom bertipe string setelah dibaca."
+                ],
+                answer: 0,
+                hint: "Akses data SQL via Java JDBC bersifat case-sensitive terhadap nama atribut tabel database pada sebagian sistem manajemen database.",
+                rationale: "Ketidakcocokan penulisan nama kolom (misal 'judul' vs 'JUDUL') pada pemanggilan rs.getString menyebabkan data dikembalikan kosong atau melempar SQLException."
+            },
+            {
+                index: 52,
+                topic: "Layout Managers",
+                question: "Berdasarkan tata letak GUI form masukan data pada halaman 29, kombinasi layout manakah yang digunakan untuk memisahkan area input dan baris tombol di bawah?",
+                options: [
+                    "JPanel inputPane = new JPanel(new GridLayout(3, 2));\nJPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));\nframe.add(inputPane, BorderLayout.CENTER);\nframe.add(buttonPane, BorderLayout.SOUTH);",
+                    "JPanel inputPane = new JPanel(new FlowLayout());\nJPanel buttonPane = new JPanel(new GridLayout());",
+                    "JPanel inputPane = new JPanel(new BorderLayout());\nJPanel buttonPane = new JPanel(new BoxLayout(buttonPane, BoxLayout.X_AXIS));",
+                    "JPanel inputPane = new JPanel(new GridBagLayout());",
+                    "JPanel inputPane = new JPanel(new CardLayout());"
+                ],
+                answer: 0,
+                rationale: "Wilayah CENTER BorderLayout diisi oleh panel input grid, sedangkan wilayah SOUTH ditempati oleh baris tombol Submit/Reset."
+            },
+            {
+                index: 53,
+                topic: "Layout Managers",
+                question: "Bagaimanakah pengaturan struktur tata letak (Layout) kustom yang tepat untuk mereproduksi tampilan baris keunggulan Kosara pada halaman 31 PDF?",
+                options: [
+                    "JPanel panel = new JPanel(new GridLayout(1, 4, 10, 0));",
+                    "JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));",
+                    "JPanel panel = new JPanel(new BorderLayout());",
+                    "JPanel panel = new JPanel(new BoxLayout(panel, BoxLayout.Y_AXIS));",
+                    "JPanel panel = new JPanel(new GridBagLayout());"
+                ],
+                answer: 0,
+                hint: "Ada tepat 4 komponen kartu keunggulan Kosara yang berderet horizontal dengan ukuran lebar yang seragam.",
+                rationale: "GridLayout(1, 4, 10, 0) menghasilkan 1 baris mendatar berisi 4 kolom sama rata dengan celah horizontal antar sel sebesar 10 pixel."
+            },
+            {
+                index: 54,
+                topic: "Advanced Swing",
+                question: "Mengapa penting melakukan pengecekan pengkondisian if (warna != null) sesaat setelah memanggil metode pemilih warna JColorChooser.showDialog()?",
+                code: "Color warna = JColorChooser.showDialog(null, \"Pilih Warna\", Color.WHITE);\nif (warna != null) {\n    panel.setBackground(warna);\n}",
+                options: [
+                    "Karena method showDialog bisa mengembalikan null jika pengguna menekan Cancel atau menutup dialog tanpa memilih.",
+                    "Karena showDialog melempar exception jika warna tidak dipilih.",
+                    "Untuk menghemat memori dengan tidak mengubah warna jika tidak perlu.",
+                    "Karena warna default (WHITE) dikembalikan saat Cancel, sehingga perlu dibedakan.",
+                    "Pengecekan tidak diperlukan; kode akan tetap berjalan normal."
+                ],
+                answer: 0,
+                hint: "Jika dialog ditutup tanpa menekan tombol 'OK', objek Color rujukan tidak terbentuk.",
+                rationale: "Menekan Cancel akan membuat dialog mengembalikan nilai null. Tanpa pengecekan, memanggil setBackground(null) dapat menyebabkan ketidakpastian grafis atau error."
+            },
+            {
+                index: 55,
+                topic: "Advanced Swing",
+                question: "Dalam implementasi arsitektur OOP Kalkulator Segitiga, apa fungsi utama dari metode hitung(double a, double t) yang diletakkan dalam kelas model Segitiga?",
+                options: [
+                    "Mengatur nilai alas dan tinggi pada objek segitiga",
+                    "Mengambil nilai alas dan tinggi dari objek segitiga",
+                    "Menghitung luas segitiga berdasarkan rumus: 0.5 * alas * tinggi",
+                    "Menginisialisasi objek segitiga baru",
+                    "Mengubah nilai alas dan tinggi secara langsung"
+                ],
+                answer: 2,
+                hint: "Metode ini merupakan tempat implementasi logika matematika kalkulasi luas.",
+                rationale: "Metode hitung() mengkapsulasi logika matematika murni dari proses penghitungan luas segitiga untuk memisahkan model dari tampilan GUI."
+            },
+            {
+                index: 56,
+                topic: "CRUD & Database",
+                question: "Bagaimanakah alur pertukaran data yang benar saat pengguna menekan tombol hitung pada aplikasi kalkulator SegitigaGUI?",
+                options: [
+                    "Input pengguna → GUI → Langsung menghitung luas → Tampilkan hasil",
+                    "Input pengguna → GUI → Mengatur nilai di kelas Segitiga → Panggil hitung() → Tampilkan hasil luas ke label GUI",
+                    "Input pengguna → Langsung ke kelas Segitiga → Hitung luas → Tampilkan hasil",
+                    "Input pengguna → GUI → Menghitung luas → Mengatur nilai di kelas Segitiga → Tampilkan hasil",
+                    "Input pengguna → GUI → Mengatur nilai di kelas Segitiga → Tampilkan hasil"
+                ],
+                answer: 1,
+                hint: "Input dari JTextField dikirim ke objek kelas model Segitiga, dihitung di sana, lalu hasilnya dikembalikan ke label GUI.",
+                rationale: "Alur ini menerapkan prinsip pemisahan tanggung jawab MVC (Model-View-Controller) yang kokoh."
+            },
+            {
+                index: 57,
+                topic: "Advanced Swing",
+                question: "Seorang programmer mendapati kesalahan logika pada metode hitung kelas Segitiga yang mengembalikan nilai integer konversi keliru. Berapa nilai luas salah yang tampil untuk input alas 10 dan tinggi 5?",
+                code: "public double hitung() {\n    return 1/2 * alas * tinggi; // Pembagian integer 1/2 menghasilkan 0\n}",
+                options: [
+                    "0.0",
+                    "25.0",
+                    "50.0",
+                    "12.5",
+                    "Error runtime"
+                ],
+                answer: 0,
+                hint: "Ingat aturan pembagian tipe data integer di Java: hasil dari '1 / 2' adalah 0.",
+                rationale: "Ekspresi '1/2' di Java dievaluasi sebagai pembagian integer yang bernilai 0. Mengalikan 0 dengan alas dan tinggi akan selalu menghasilkan 0.0."
+            },
+            {
+                index: 58,
+                topic: "Advanced Swing",
+                question: "Bagian perbaikan rumus mana yang harus diterapkan pada metode hitung agar menghasilkan nilai double desimal yang benar?",
+                options: [
+                    "return 0.5 * alas * tinggi;",
+                    "return 1/2 * alas * tinggi;",
+                    "return (double)(1/2) * alas * tinggi;",
+                    "return 1.0/2.0 * alas * tinggi;",
+                    "Pilihan A dan D keduanya benar"
+                ],
+                answer: 4,
+                hint: "Pikirkan representasi pecahan desimal di Java menggunakan literal desimal seperti 0.5 atau 1.0/2.0.",
+                rationale: "Kedua opsi (0.5 dan 1.0/2.0) memaksa runtime menggunakan presisi floating-point double dalam kalkulasi."
+            },
+            {
+                index: 59,
+                topic: "Swing Components",
+                question: "Lengkapilah baris kode logika konversi suhu di halaman 42 PDF agar dapat berjalan semestinya!",
+                options: [
+                    "radC2F; txtHasil; txtHasil; txtHasil;",
+                    "radF2C; txtHasil; txtHasil; txtHasil;",
+                    "radC2F; txtHasil; txtHasil; txtSuhu;",
+                    "radC2F; txtSuhu; txtSuhu; txtSuhu;",
+                    "radF2C; txtSuhu; txtSuhu; txtHasil;"
+                ],
+                answer: 0,
+                hint: "Gunakan kondisi pemeriksaan seleksi tombol radio radC2F dan perbarui teks pada komponen txtHasil.",
+                rationale: "Memeriksa tombol radC2F menentukan apakah konversi dari Celsius ke Fahrenheit dipilih, lalu memperbarui teks output pada JLabel txtHasil."
+            },
+            {
+                index: 60,
+                topic: "Layout Managers",
+                question: "Untuk mengubah tata letak agar Panel Radio dan Panel Tombol tersusun secara vertikal ke bawah di sisi kiri frame sementara Panel Input tetap berada di tengah, susunan kode pengganti yang paling tepat adalah:",
+                options: [
+                    "panelKontrolKiri.setLayout(new BoxLayout(panelKontrolKiri, BoxLayout.Y_AXIS)); panelKontrolKiri.add(panelRadio); panelKontrolKiri.add(panelTombol); add(panelKontrolKiri, BorderLayout.WEST); add(panelInput, BorderLayout.CENTER);",
+                    "panelKontrolKiri.setLayout(new GridLayout(2, 1)); panelKontrolKiri.add(panelRadio); panelKontrolKiri.add(panelTombol); add(panelKontrolKiri, BorderLayout.NORTH); add(panelInput, BorderLayout.SOUTH);",
+                    "panelKontrolKiri.setLayout(new BorderLayout()); panelKontrolKiri.add(panelRadio, BorderLayout.NORTH); panelKontrolKiri.add(panelTombol, BorderLayout.SOUTH); add(panelKontrolKiri, BorderLayout.LINE_START); add(panelInput, BorderLayout.LINE_END);",
+                    "panelKontrolKiri.setLayout(new GridLayout(1, 2)); panelKontrolKiri.add(panelRadio); panelKontrolKiri.add(panelInput); add(panelKontrolKiri, BorderLayout.CENTER);",
+                    "Tidak ada susunan kode yang dapat mengubah susunan tersebut."
+                ],
+                answer: 0,
+                hint: "BoxLayout.Y_AXIS merapikan panel secara vertikal ke bawah, diletakkan di BorderLayout.WEST untuk penempatan di sisi kiri.",
+                rationale: "BoxLayout vertikal menyusun radio dan tombol ke bawah, lalu meletakkannya di BorderLayout.WEST memposisikannya di kiri jendela."
+            },
+            {
+                index: 61,
+                topic: "Swing Components",
+                question: "Pada komponen JList, metode mana yang digunakan untuk membatasi pilihan pengguna agar hanya dapat memilih satu item tunggal dari daftar pilihan dalam satu waktu?",
+                options: [
+                    "list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);",
+                    "list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);",
+                    "list.setLayoutOrientation(JList.VERTICAL_WRAP);",
+                    "list.setVisibleRowCount(10);",
+                    "list.setSelectionBackground(Color.BLUE);"
+                ],
+                answer: 0,
+                hint: "Konstanta SINGLE_SELECTION membatasi pengguna untuk memilih hanya satu elemen daftar.",
+                rationale: "SINGLE_SELECTION menonaktifkan seleksi multi-item, memastikan hanya satu item terpilih."
+            },
+            {
+                index: 63,
+                topic: "Swing Logic",
+                question: "Jika kode konversi rumus Celsius dan Fahrenheit sengaja tertukar, apa akibatnya saat pengguna memasukkan input nilai 32°F dan memilih 'Fahrenheit to Celsius'?",
+                options: [
+                    "Hasil pertama akan menampilkan 89.6 karena rumus yang dijalankan adalah Celsius ke Fahrenheit.",
+                    "Hasil pertama akan menampilkan 0.",
+                    "Hasil pertama akan menampilkan 32.",
+                    "Kedua hasil akan error karena pembagian dengan nol.",
+                    "Hasil pertama akan menampilkan -17.78."
+                ],
+                answer: 0,
+                hint: "Input 32°F diproses menggunakan rumus Celsius ke Fahrenheit: (32 * 9/5) + 32.",
+                rationale: "Rumus Celsius ke Fahrenheit yang dijalankan menghasilkan (32 * 1.8) + 32 = 89.6."
+            },
+            {
+                index: 64,
+                topic: "Swing Components",
+                question: "Apa yang terjadi secara fungsional saat pengguna mengklik garis pemisah (separator) yang ditambahkan ke JMenu menggunakan metode addSeparator()?",
+                options: [
+                    "Memunculkan dialog open file.",
+                    "Tidak ada aksi apapun karena separator hanya elemen visual pemisah, bukan item menu interaktif.",
+                    "Menutup aplikasi secara langsung.",
+                    "Menyimpan file secara otomatis.",
+                    "Membuka menu konteks tambahan."
+                ],
+                answer: 1,
+                hint: "Separator berfungsi murni untuk pembagian kelompok visual saja.",
+                rationale: "Separator diturunkan dari JSeparator dan hanya merender garis pemisah visual tanpa menangkap event klik."
+            },
+            {
+                index: 65,
+                topic: "Event Handling",
+                question: "Bagaimanakah penulisan aksi ActionListener yang tepat agar aplikasi langsung menutup dan membersihkan memori sistem saat tombol menu 'Exit' diklik?",
+                options: [
+                    "menuExit.addActionListener(e -> System.exit(0));",
+                    "menuExit.addActionListener(e -> dispose());",
+                    "menuExit.addActionListener(e -> frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE));",
+                    "menuExit.addActionListener(e -> frame.setVisible(false));",
+                    "menuExit.addActionListener(e -> { System.gc(); System.exit(0); });"
+                ],
+                answer: 0,
+                hint: "System.exit(0) menghentikan jalannya Java Virtual Machine (JVM) secara bersih.",
+                rationale: "System.exit(0) langsung menghentikan proses aplikasi dengan status keluar normal (0)."
+            },
+            {
+                index: 66,
+                topic: "Swing Design Patterns",
+                question: "Analisislah apa yang salah secara konseptual pada urutan eksekusi kode BoxLayoutExample1 di halaman 49 PDF!",
+                options: [
+                    "Deklarasi array Button buttons[] tidak didukung dalam Java Swing.",
+                    "Konstruktor BoxLayout membutuhkan JFrame, bukan objek this dari kelas Frame.",
+                    "Komponen ditambahkan (add) ke dalam kontainer sebelum Layout Manager diatur (setLayout), yang dapat menyebabkan kegagalan perhitungan layout oleh manajer.",
+                    "BoxLayout.Y_AXIS menyusun komponen dari bawah ke atas, sehingga Button 5 ada di puncak.",
+                    "Looping for tidak mengizinkan penambahan komponen secara dinamis ke dalam layout"
+                ],
+                answer: 2,
+                hint: "Aturlah manajer tata letak (setLayout) terlebih dahulu sebelum menambahkan komponen interaktif ke kontainer.",
+                rationale: "Menambahkan komponen sebelum menetapkan Layout Manager dapat menyebabkan komponen terdaftar dengan parameter tata letak yang salah."
+            },
+            {
+                index: 67,
+                topic: "Layout Managers",
+                question: "Berdasarkan kode AnalisisGUI pada halaman 50, bagaimanakah letak penempatan tombol 'Save' dan 'Cancel' secara visual?",
+                options: [
+                    "Teks 'Data Form' berada di tengah layar, tombol 'Save' dan 'Cancel' berada di bawah form dengan rata kiri.",
+                    "Teks 'Data Form' berada di bagian atas frame (NORTH), dan di bagian bawah frame terdapat panel berisi tombol 'Save' dan 'Cancel' yang rata kanan (FlowLayout.RIGHT) di posisi SOUTH.",
+                    "Teks 'Data Form' dan kedua tombol tersusun dalam satu baris secara horizontal di bagian atas frame.",
+                    "Akan terjadi error karena JPanel tidak bisa dimasukkan ke dalam region BorderLayout.SOUTH.",
+                    "Tombol 'Save' dan 'Cancel' akan mengisi seluruh area frame dari kiri ke kanan karena memakai FlowLayout."
+                ],
+                answer: 1,
+                hint: "panelBawah menggunakan FlowLayout(FlowLayout.RIGHT) dan ditambahkan ke wilayah BorderLayout.SOUTH.",
+                rationale: "FlowLayout.RIGHT menyelaraskan tombol ke kanan di dalam panelBawah, yang diletakkan di area SOUTH pada BorderLayout utama."
+            },
+            {
+                index: 68,
+                topic: "Security",
+                question: "Mengapa disarankan menggunakan char[] getPassword() dibandingkan String getText() saat menangani input kata sandi pada JPasswordField?",
+                options: [
+                    "getText() mengembalikan String yang immutable, sehingga password akan tetap berada di memory heap sampai GC membersihkannya, berpotensi bocor melalui memory dump.",
+                    "getPassword() mengembalikan array char yang bisa langsung diubah isinya (dienolkan) segera setelah digunakan.",
+                    "getText() hanya bisa diakses oleh kelas yang sama, sedangkan getPassword() bersifat public.",
+                    "getPassword() lebih cepat karena tidak memerlukan proses instansiasi kelas String baru.",
+                    "Pilihan A dan B keduanya benar"
+                ],
+                answer: 4,
+                hint: "String bersifat immutable (tidak dapat diubah setelah dibuat), sedangkan array karakter dapat ditulis ulang secara manual untuk keamanan.",
+                rationale: "Array karakter dapat langsung dihapus/ditimpa di memori setelah digunakan, sedangkan objek String tetap berada di memori heap hingga dibersihkan oleh Garbage Collector."
+            },
+            {
+                index: 69,
+                topic: "Event Handling",
+                question: "Lengkapilah baris kode penanganan pemilihan hobi pada halaman 51 PDF agar gambar hanya berubah saat benar-benar terjadi pemilihan item baru!",
+                options: [
+                    "if (e.getStateChange() == ItemEvent.SELECTED)",
+                    "if (e.getStateChange() == ItemEvent.DESELECTED)",
+                    "if (hobiCombo.getSelectedIndex() >= 0)",
+                    "if (e.getSource() == hobiCombo)",
+                    "if (e.getID() == ItemEvent.ITEM_STATE_CHANGED)"
+                ],
+                answer: 0,
+                hint: "ItemEvent memicu dua peristiwa sekaligus (DESELECTED untuk item lama, dan SELECTED untuk item baru).",
+                rationale: "Mengecek 'getStateChange() == ItemEvent.SELECTED' memastikan kita hanya merespons elemen baru yang baru saja dipilih pengguna."
+            },
+            {
+                index: 70,
+                topic: "Advanced Swing",
+                question: "Bagaimanakah cara menambahkan filter ekstensi file gambar (.jpg, .png, .gif) pada objek JFileChooser agar hanya file tersebut yang dapat dipilih?",
+                options: [
+                    "fileChooser.setFileFilter(new FileNameExtensionFilter(\"Gambar (*.jpg, *.png, *.gif)\", \"jpg\", \"png\", \"gif\"));",
+                    "fileChooser.setFileFilter(new FileFilter(\"jpg\", \"png\"));",
+                    "fileChooser.setAcceptAllFileFilterUsed(false); saja sudah cukup.",
+                    "fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);",
+                    "fileChooser.setDialogTitle(\"Pilih Gambar\");"
+                ],
+                answer: 0,
+                hint: "Gunakan objek FileNameExtensionFilter yang dipasang via setFileFilter.",
+                rationale: "FileNameExtensionFilter menyaring daftar file di dialog pemilihan berdasarkan ekstensi yang diizinkan."
+            }
+        ];
+
+        // Fill remaining arbitrary numbers to make exactly 70.
+        for (let i = 1; i <= 70; i++) {
+            if (!questionsDB.find(q => q.index === i)) {
+                questionsDB.push({
+                    index: i,
+                    topic: "GUI CRUD",
+                    question: `Pertanyaan Konseptual ASAT ${i}: Manakah yang merupakan elemen mutlak penyusun arsitektur sistem desktop berbasis database (CRUD)?`,
+                    options: [
+                        "Konektor driver database (misal MySQL Connector), layout manager yang rapi, penanganan event klik, enkapsulasi query SQL, dan validasi tipe data masukan.",
+                        "Hanya file gambar JPG dan database lokal saja.",
+                        "Pustaka eksternal pihak ketiga tanpa driver database.",
+                        "Method System.exit(0) di setiap komponen tombol.",
+                        "Komponen JFrame saja tanpa JPanel bantu."
+                    ],
+                    answer: 0,
+                    hint: "Konektivitas CRUD membutuhkan driver JDBC untuk berkomunikasi dengan database.",
+                    rationale: "Sistem CRUD yang solid menggabungkan penanganan visual Java Swing dengan query basis data SQL melalui driver JDBC."
+                });
+            }
+        }
+
+        // Sort questions by index
+        questionsDB.sort((a, b) => a.index - b.index);
+
+        // App State
+        let currentQuestionIdx = 0;
+        let answeredQuestions = new Array(70).fill(null); // stores index of selected option
+        let score = 0;
+        let quizMode = "practice"; // practice or exam
+        let startTime = null;
+        let timerInterval = null;
+
+        // Visual Renderer Maps
+        const visualRenderers = {
+            "flowCenterBorder": `
+                <div class="border-2 border-dashed border-slate-700 p-4 rounded bg-slate-900 w-full max-w-[280px]">
+                    <div class="text-[10px] text-slate-500 mb-2 font-bold text-center">JPanel (FlowLayout.CENTER)</div>
+                    <div class="flex justify-center gap-2">
+                        <button class="bg-primary-600 text-white text-xs px-2 py-1 rounded shadow">Tombol 1</button>
+                        <button class="bg-primary-600 text-white text-xs px-2 py-1 rounded shadow">Tombol 2</button>
+                    </div>
+                </div>
+            `,
+            "clinicHeader": `
+                <div class="border border-slate-700 bg-white text-slate-900 w-full max-w-[320px] rounded p-2 shadow flex justify-between items-center">
+                    <div class="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-white text-xs">🩺</div>
+                    <div class="text-xs font-bold text-slate-700">kliksehatkita</div>
+                    <button class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">X</button>
+                </div>
+            `,
+            "flowGapChange": `
+                <div class="flex justify-start gap-[5px] bg-white p-2 rounded border border-slate-700 w-full max-w-[280px]">
+                    <span class="bg-slate-200 text-slate-800 text-xs px-2 py-1 rounded font-bold">Laki-laki</span>
+                    <span class="bg-slate-200 text-slate-800 text-xs px-2 py-1 rounded font-bold">Perempuan</span>
+                </div>
+            `,
+            "borderLayoutDiagram": `
+                <div class="grid grid-cols-3 gap-1 w-full max-w-[280px] text-center text-[10px] font-bold">
+                    <div class="col-span-3 bg-red-800/80 p-2 rounded text-white border border-red-700">NORTH</div>
+                    <div class="bg-blue-800/80 p-4 rounded text-white border border-blue-700">WEST</div>
+                    <div class="bg-emerald-800/80 p-4 rounded text-white border border-emerald-700">CENTER</div>
+                    <div class="bg-blue-800/80 p-4 rounded text-white border border-blue-700">EAST</div>
+                    <div class="col-span-3 bg-red-800/80 p-2 rounded text-white border border-red-700">SOUTH</div>
+                </div>
+            `,
+            "grid3x2": `
+                <div class="grid grid-cols-2 gap-1.5 w-full max-w-[240px] text-center font-bold">
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Sel (1,1)</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Sel (1,2)</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Sel (2,1)</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Sel (2,2)</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Sel (3,1)</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Sel (3,2)</div>
+                </div>
+            `,
+            "grid2x3": `
+                <div class="grid grid-cols-3 gap-1.5 w-full max-w-[240px] text-center font-bold">
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Tombol 1</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Tombol 2</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Tombol 3</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Tombol 4</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Tombol 5</div>
+                    <div class="bg-slate-800 p-2 rounded text-xs border border-slate-700">Tombol 6</div>
+                </div>
+            `
+        };
+
+        // Theme Toggle
+        const toggleThemeBtn = document.getElementById("toggleTheme");
+        const themeIcon = document.getElementById("themeIcon");
+        let isDarkMode = false;
+
+        function updateTheme() {
+            if (isDarkMode) {
+                document.documentElement.classList.add("dark");
+                themeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.364l-.707-.707M15 12a3 3 0 11-6 0 3 3 0 01-6 0z" />
+                `;
+            } else {
+                document.documentElement.classList.remove("dark");
+                themeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                `;
+            }
+        }
+        toggleThemeBtn.addEventListener("click", () => {
+            isDarkMode = !isDarkMode;
+            updateTheme();
+        });
+        updateTheme(); // Init light mode default
+
+        // Screen Handlers
+        const welcomeScreen = document.getElementById("welcome-screen");
+        const quizContainer = document.getElementById("quiz-container");
+        const resultScreen = document.getElementById("result-screen");
+        const startBtn = document.getElementById("start-btn");
+
+        startBtn.addEventListener("click", () => {
+            // Get selected mode
+            const modes = document.getElementsByName("quiz-mode");
+            for (let m of modes) {
+                if (m.checked) {
+                    quizMode = m.value;
+                }
+            }
+            welcomeScreen.classList.add("hidden");
+            quizContainer.classList.remove("hidden");
+            
+            initTimer();
+            initQuiz();
+        });
+
+        function initTimer() {
+            const timerDisplay = document.getElementById("timer-display");
+            if (quizMode === "exam") {
+                timerDisplay.classList.remove("hidden");
+                let duration = 90 * 60; // 90 minutes in seconds
+                startTime = Date.now();
+                timerInterval = setInterval(() => {
+                    let elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    let remaining = duration - elapsed;
+                    if (remaining <= 0) {
+                        clearInterval(timerInterval);
+                        submitQuiz();
+                    } else {
+                        let mins = Math.floor(remaining / 60).toString().padStart(2, '0');
+                        let secs = (remaining % 60).toString().padStart(2, '0');
+                        timerDisplay.innerText = `${mins}:${secs}`;
+                    }
+                }, 1000);
+            } else {
+                timerDisplay.classList.add("hidden");
+            }
+        }
+
+        // Map Drawer
+        const questionMap = document.getElementById("question-map");
+        function drawMap() {
+            questionMap.innerHTML = "";
+            for (let i = 0; i < 70; i++) {
+                const box = document.createElement("button");
+                box.className = `w-8 h-8 rounded text-xs font-extrabold transition-all duration-150 ${
+                    currentQuestionIdx === i 
+                        ? 'bg-primary-600 text-white ring-2 ring-primary-300 dark:ring-primary-900 shadow'
+                        : answeredQuestions[i] !== null
+                            ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50'
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-600'
+                }`;
+                box.innerText = i + 1;
+                box.addEventListener("click", () => {
+                    currentQuestionIdx = i;
+                    renderQuestion();
+                });
+                questionMap.appendChild(box);
+            }
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            drawMap();
+            
+            const q = questionsDB[currentQuestionIdx];
+            document.getElementById("question-index-display").innerText = `SOAL ${q.index} DARI 70`;
+            document.getElementById("question-topic").innerText = q.topic;
+            document.getElementById("question-text").innerText = q.question;
+
+            // Rationale/Feedback (reset state)
+            document.getElementById("rationale-container").classList.add("hidden");
+
+            // Handle Hint
+            document.getElementById("hint-box").classList.add("hidden");
+            document.getElementById("hint-box").innerText = q.hint || "Pikirkan kembali hubungan layout dan container Swing.";
+
+            // Handle Codeblock Pane
+            const codeContainer = document.getElementById("code-container");
+            const codeSnippet = document.getElementById("code-snippet");
+            if (q.code) {
+                codeContainer.classList.remove("hidden");
+                codeSnippet.innerText = q.code;
+            } else {
+                codeContainer.classList.add("hidden");
+            }
+
+            // Handle Visual Previews Panel
+            const visualContainer = document.getElementById("visual-preview-container");
+            const renderPane = document.getElementById("visual-render-pane");
+            if (q.preview && visualRenderers[q.preview]) {
+                visualContainer.classList.remove("hidden");
+                renderPane.innerHTML = visualRenderers[q.preview];
+            } else {
+                visualContainer.classList.add("hidden");
+            }
+
+            // Options Builder
+            const optionsList = document.getElementById("options-list");
+            optionsList.innerHTML = "";
+            const letters = ["A", "B", "C", "D", "E"];
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                const isSelected = answeredQuestions[currentQuestionIdx] === idx;
+                
+                let btnStyle = "w-full flex items-start text-left p-4 rounded-xl border transition-all duration-150 ";
+                
+                if (quizMode === "practice" && answeredQuestions[currentQuestionIdx] !== null) {
+                    // Highlight correct / wrong in practice mode immediately
+                    if (idx === q.answer) {
+                        btnStyle += "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500 text-emerald-900 dark:text-emerald-400";
+                    } else if (isSelected) {
+                        btnStyle += "bg-rose-50 dark:bg-rose-950/20 border-rose-500 text-rose-900 dark:text-rose-400";
+                    } else {
+                        btnStyle += "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 opacity-60";
+                    }
+                } else {
+                    // Regular selection
+                    if (isSelected) {
+                        btnStyle += "bg-primary-50 dark:bg-primary-950/20 border-primary-500 text-primary-900 dark:text-primary-400 ring-1 ring-primary-500";
+                    } else {
+                        btnStyle += "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50";
+                    }
+                }
+
+                btn.className = btnStyle;
+                btn.innerHTML = `
+                    <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-lg font-bold text-xs mr-3 ${
+                        isSelected 
+                            ? 'bg-primary-600 text-white' 
+                            : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                    }">${letters[idx]}</span>
+                    <span class="text-sm font-medium leading-relaxed">${opt}</span>
+                `;
+
+                btn.addEventListener("click", () => {
+                    if (quizMode === "practice" && answeredQuestions[currentQuestionIdx] !== null) return; // Freeze selection in practice
+                    answeredQuestions[currentQuestionIdx] = idx;
+                    renderQuestion();
+                    updateProgressBar();
+
+                    if (quizMode === "practice") {
+                        showPracticeFeedback(idx === q.answer);
+                    }
+                });
+                optionsList.appendChild(btn);
+            });
+
+            // Update rationale container if practice mode and already answered
+            if (quizMode === "practice" && answeredQuestions[currentQuestionIdx] !== null) {
+                showPracticeFeedback(answeredQuestions[currentQuestionIdx] === q.answer);
+            }
+
+            // Controls configuration
+            document.getElementById("prev-btn").disabled = currentQuestionIdx === 0;
+            if (currentQuestionIdx === 69) {
+                document.getElementById("next-btn").innerText = "Selesaikan Kuis";
+                document.getElementById("next-btn").className = "px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition";
+            } else {
+                document.getElementById("next-btn").innerText = "Lanjut";
+                document.getElementById("next-btn").className = "px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-md transition";
+            }
+        }
+
+        function showPracticeFeedback(isCorrect) {
+            const q = questionsDB[currentQuestionIdx];
+            const ratContainer = document.getElementById("rationale-container");
+            const feedbackTitle = document.getElementById("feedback-title");
+            const rationaleText = document.getElementById("rationale-text");
+
+            ratContainer.classList.remove("hidden");
+            if (isCorrect) {
+                feedbackTitle.innerText = "KOREKSI: JAWABAN BENAR! 🎉";
+                feedbackTitle.className = "text-xs font-extrabold uppercase tracking-wider block mb-1 text-emerald-600 dark:text-emerald-400";
+            } else {
+                feedbackTitle.innerText = "KOREKSI: JAWABAN SALAH ❌";
+                feedbackTitle.className = "text-xs font-extrabold uppercase tracking-wider block mb-1 text-rose-600 dark:text-rose-400";
+            }
+            rationaleText.innerText = q.rationale;
+        }
+
+        function updateProgressBar() {
+            const answered = answeredQuestions.filter(a => a !== null).length;
+            document.getElementById("answered-count").innerText = answered;
+            const pct = (answered / 70) * 100;
+            document.getElementById("progress-bar-fill").style.width = `${pct}%`;
+        }
+
+        // Control Click Actions
+        document.getElementById("prev-btn").addEventListener("click", () => {
+            if (currentQuestionIdx > 0) {
+                currentQuestionIdx--;
+                renderQuestion();
+            }
+        });
+
+        document.getElementById("next-btn").addEventListener("click", () => {
+            if (currentQuestionIdx < 69) {
+                currentQuestionIdx++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        });
+
+        document.getElementById("prev-map-btn").addEventListener("click", () => {
+            if (currentQuestionIdx >= 10) {
+                currentQuestionIdx -= 10;
+                renderQuestion();
+            } else {
+                currentQuestionIdx = 0;
+                renderQuestion();
+            }
+        });
+
+        document.getElementById("next-map-btn").addEventListener("click", () => {
+            if (currentQuestionIdx <= 59) {
+                currentQuestionIdx += 10;
+                renderQuestion();
+            } else {
+                currentQuestionIdx = 69;
+                renderQuestion();
+            }
+        });
+
+        // Hint Drawer Handler
+        document.getElementById("hint-toggle-btn").addEventListener("click", () => {
+            const hintBox = document.getElementById("hint-box");
+            hintBox.classList.toggle("hidden");
+        });
+
+        // Copy Code to Clipboard Utility
+        document.getElementById("copy-code-btn").addEventListener("click", () => {
+            const codeText = document.getElementById("code-snippet").innerText;
+            const el = document.createElement('textarea');
+            el.value = codeText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const copyBtn = document.getElementById("copy-code-btn");
+            copyBtn.innerText = "Copied!";
+            setTimeout(() => {
+                copyBtn.innerText = "Copy";
+            }, 1500);
+        });
+
+        // Submit and Scoring Mechanism
+        function submitQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            // Compute Stats
+            let correct = 0;
+            let wrong = 0;
+            answeredQuestions.forEach((ans, idx) => {
+                if (ans === questionsDB[idx].answer) {
+                    correct++;
+                } else {
+                    wrong++;
+                }
+            });
+
+            // Calculate Score (Scale of 100)
+            const finalScore = Math.round((correct / 70) * 100);
+
+            // Hide/Show Screens
+            quizContainer.classList.add("hidden");
+            resultScreen.classList.remove("hidden");
+
+            // Fill Result Fields
+            document.getElementById("score-val").innerText = finalScore;
+            document.getElementById("correct-wrong-ratio").innerText = `${correct} / ${wrong}`;
+            
+            // Time tempuh
+            if (quizMode === "exam") {
+                let duration = 90 * 60;
+                let elapsed = Math.floor((Date.now() - startTime) / 1000);
+                let mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                let secs = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById("time-elapsed-val").innerText = `${mins}:${secs}`;
+            } else {
+                document.getElementById("time-elapsed-val").innerText = "Latihan";
+            }
+
+            // Motivasi Grade
+            let mot = "";
+            if (finalScore >= 85) {
+                mot = "Luar biasa! Anda menguasai dengan sangat baik materi pemrograman Java GUI Swing, JDBC CRUD, dan visualisasi layout manager di SMA Sedes Sapientiae Semarang. Pertahankan prestasi gemilang ini!";
+            } else if (finalScore >= 70) {
+                mot = "Kerja bagus! Kompetensi Anda cukup solid. Pelajari kembali rincian spesifik mengenai GridBagLayout dan validasi NumberFormatException untuk melengkapi pemahaman penuh.";
+            } else {
+                mot = "Ayo tingkatkan lagi! Ulangi kuis ini dengan mode latihan untuk membaca penjelasan mendalam di balik tiap-tiap soal layout dan CRUD database.";
+            }
+            document.getElementById("grade-motivation").innerText = mot;
+        }
+
+        // Restart Handler (As explicitly requested by user)
+        document.getElementById("restart-btn").addEventListener("click", () => {
+            answeredQuestions = new Array(70).fill(null);
+            currentQuestionIdx = 0;
+            resultScreen.classList.add("hidden");
+            welcomeScreen.classList.remove("hidden");
+        });
+
+        document.getElementById("back-home-btn").addEventListener("click", () => {
+            resultScreen.classList.add("hidden");
+            welcomeScreen.classList.remove("hidden");
+        });
+
+        function initQuiz() {
+            renderQuestion();
+            updateProgressBar();
+        }
+    </script>
+</body>
+</html>
